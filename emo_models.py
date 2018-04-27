@@ -19,12 +19,10 @@ from collections import Counter
 vec = CountVectorizer()
 
 df = pd.read_csv("liar_dataset/train.tsv", delimiter="\t", header= None)
-# print 'len(DF): ' + str(df)
 lbw = []
 corpus =[]
 s2 = set()
 
-# liwc = np.array(ml)
 train_file = open('liar_dataset/train.tsv', 'r');
 train_file = train_file.read();
 train_file = train_file.split('\n')
@@ -34,14 +32,6 @@ for line in train_file:
 	lbw.append(line[1]);
 	s2.add(line[1]);
 
-'''
-test_file = pd.read_csv("liar_dataset/test.tsv", delimiter="\t", header= None)
-lbw2 = []
-test_corpus = []
-for i in range(0,len(test_file)):
-	test_corpus.append(test_file[2].iloc[i]);
-	lbw2.append(test_file[1].iloc[i]);
-'''
 lbw2 = []
 valid_corpus = []
 valid_file = open('liar_dataset/valid.tsv', 'r');
@@ -64,6 +54,7 @@ valid_six_labels = [];
 for i in lbw2:
 	valid_six_labels.append(lb[i]);
 
+# This just gets the vector of labels for binary classification
 train_bin_labels_file = open('train_binary_labels','r');
 train_bin_labels_file = train_bin_labels_file.read();
 train_binary_labels = train_bin_labels_file.split('\n');
@@ -72,6 +63,7 @@ valid_bin_labels_file = open('valid_binary_labels','r');
 valid_bin_labels_file = valid_bin_labels_file.read();
 valid_binary_labels = valid_bin_labels_file.split('\n');
 
+# In the following section I create the vectors of training data (for each feature)
 # ============= TRAINING ==========================================
 #
 #
@@ -349,14 +341,19 @@ x_valid_unigrams_superlatives_manner_cnt = np.hstack([valid_manner_adverbs_cnt,v
 x_valid_all_bin = np.hstack([valid_manner_adverbs_bin,valid_superlatives_bin,valid_senti_bin,valid_emotion_bin,valid_metadata,x_valid_unigrams]);
 x_valid_all_cnt = np.hstack([valid_manner_adverbs_cnt,valid_superlatives_cnt,valid_senti_cnt,valid_emotion_cnt,valid_metadata,x_valid_unigrams]);
 
-
+# This is a list of all the training data sets (each pertaining to a different model)
 training_data_sets = [x_train_unigrams_metadata, x_train_unigrams_emotion_bin, x_train_unigrams_senti_bin, x_train_unigrams_superlatives_manner_bin, x_train_unigrams_emotion_cnt, x_train_unigrams_senti_cnt, x_train_unigrams_superlatives_manner_cnt, x_train_all_bin, x_train_all_cnt];
+# This is a list of model names (the specific combination of features)
 names = ['uni + metadata','uni + emotion_bin', 'uni + senti_bin', 'uni + superlatives_bin + manner_bin', 'uni + emotion_cnt', 'uni + senti_cnt', 'uni + superlatives_cnt + manner_cnt', 'uni + all_bin', 'uni + all_cnt'];
+# This is a list of all the validation data sets (each pertaining to a different model)
 validation_data_sets = [x_valid_unigrams_metadata, x_valid_unigrams_emotion_bin, x_valid_unigrams_senti_bin, x_valid_unigrams_superlatives_manner_bin, x_valid_unigrams_emotion_cnt, x_valid_unigrams_senti_cnt, x_valid_unigrams_superlatives_manner_cnt, x_valid_all_bin, x_valid_all_cnt];
 
 y_train = train_six_labels; 
 y_valid = valid_six_labels;
 logreg = LogisticRegression()
+
+# The code below is for logistic regression
+# We go through each training data set in training_data_sets, train a logisitc regression model, predict, and show results
 
 '''
 logreg_file = open('logreg_results','w'); 
